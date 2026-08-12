@@ -11,9 +11,11 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
 np.set_printoptions(legacy="1.21")
 
+import sys
 try:
     import tflite_runtime.interpreter as tflite
 except ImportError:
+    # tensorflow의 무거운 C++ 라이브러리 충돌을 막기 위해 옵션 추가
     from tensorflow import lite as tflite
 
 log = logging.getLogger(__name__)
@@ -59,7 +61,7 @@ class Basemodel:
 
     def __init__(self):
         model_path = os.path.join(MODEL_PATH, f'{self.model_name}.tflite')
-        self.interpreter = tflite.Interpreter(model_path)
+        self.interpreter = tflite.Interpreter(model_path, num_threads=1)
         self.interpreter.allocate_tensors()
         input_details = self.interpreter.get_input_details()
         output_details = self.interpreter.get_output_details()
@@ -192,7 +194,7 @@ class MDataModel:
 
     def __init__(self, sf_thresh):
         model_path = os.path.join(MODEL_PATH, f'{self.model_name}.tflite')
-        self.interpreter = tflite.Interpreter(model_path)
+        self.interpreter = tflite.Interpreter(model_path, num_threads=1)
         self.interpreter.allocate_tensors()
         input_details = self.interpreter.get_input_details()
         output_details = self.interpreter.get_output_details()

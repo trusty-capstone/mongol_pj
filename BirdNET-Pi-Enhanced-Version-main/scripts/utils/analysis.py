@@ -89,13 +89,14 @@ def analyzeAudioData(chunks, overlap, lat, lon, week):
 
 def filter_humans(predictions):
     conf = get_settings()
-    priv_thresh = conf.getfloat('PRIVACY_THRESHOLD')
+    priv_thresh = conf.getfloat('PRIVACY_THRESHOLD', fallback=0.0)
     human_cutoff = max(10, int(6000 * priv_thresh / 100.0))
     log.debug("HUMAN-CUTOFF AT: %d", human_cutoff)
     try:
-        if conf.getint('EXTRACTION_LENGTH') > 9:
+        ext_len = conf.getint('EXTRACTION_LENGTH', fallback=15)
+        if ext_len > 9:
             log.warning("EXTRACTION_LENGTH is set to %d. Privacy filter might miss human sound, "
-                        "if you care about privacy, set EXTRACTION_LENGTH to below 9 or leave empty.", conf.getint('EXTRACTION_LENGTH'))
+                        "if you care about privacy, set EXTRACTION_LENGTH to below 9 or leave empty.", ext_len)
     except ValueError:
         pass
 
@@ -143,25 +144,35 @@ def run_analysis(file):
     whitelist_list = loadCustomSpeciesList(os.path.expanduser("~/BirdNET-Pi/whitelist_species_list.txt"))
 
     conf = get_settings()
-    model = load_global_model()
-    names = get_language(conf['DATABASE_LANG'])
+    model = load_global_model()  # 여기서 모델을 로드
+    names = get_language(conf.get('DATABASE_LANG', fallback='ko'))
 
     # Read audio data & handle errors
     try:
-        audio_data = readAudioData(file.file_name, conf.getfloat('OVERLAP'), model.sample_rate, model.chunk_duration)
-    except (NameError, TypeError) as e:
+        # model 변수가 None인지 확인 후 안전하게 접근
+        if model is None:
+            log.error("Model failed to load.")
+            return []
+            
+        audio_data = readAudioData(file.file_name, conf.getfloat('OVERLAP', fallback=0.0), model.sample_rate, model.chunk_duration)
+    except Exception as e:
         log.error("Error with the following info: %s", e)
         return []
 
     # Process audio data and get detections
-    raw_detections, predicted_species_list = analyzeAudioData(audio_data, conf.getfloat('OVERLAP'), conf.getfloat('LATITUDE'),
-                                                              conf.getfloat('LONGITUDE'), file.week)
+    raw_detections, predicted_species_list = analyzeAudioData(
+        audio_data, 
+        conf.getfloat('OVERLAP', fallback=0.0), 
+        conf.getfloat('LATITUDE', fallback=37.5665),
+        conf.getfloat('LONGITUDE', fallback=126.9780), 
+        file.week
+    )
     confident_detections = []
     for time_slot, entries in raw_detections.items():
         sci_name, confidence = entries[0]
         log.info('%s-(%s_%s, %s)', time_slot, sci_name, names.get(sci_name, sci_name), confidence)
         for sci_name, confidence in entries:
-            if confidence >= conf.getfloat('CONFIDENCE'):
+            if confidence >= conf.getfloat('CONFIDENCE', fallback=0.7):
                 com_name = names.get(sci_name, sci_name)
                 if sci_name not in include_list and len(include_list) != 0:
                     log.warning("Excluded as INCLUDE_LIST is active but this species is not in it: %s %s", sci_name, com_name)

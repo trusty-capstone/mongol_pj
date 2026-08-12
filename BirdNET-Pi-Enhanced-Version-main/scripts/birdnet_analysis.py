@@ -89,6 +89,7 @@ def process_file(file_name, report_queue):
         with open(ANALYZING_NOW, 'w') as analyzing:
             analyzing.write(file_name)
         file = ParseFileName(file_name)
+        from utils.analysis import MODEL
         detections = run_analysis(file)
         # we join() to make sure te reporting queue does not get behind
         if not report_queue.empty():
