@@ -1,0 +1,7 @@
+// See https://go.microsoft.com/fwlink/?LinkId=827846
+{
+    "recommendations": [
+        "charliermarsh.ruff",
+        "astral-sh.ty"
+    ]
+}
