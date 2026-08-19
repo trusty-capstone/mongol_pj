@@ -1,5 +1,6 @@
 Start (s),End (s),Scientific name,Common name,Confidence,File
-0.0,3.0,Passer montanus,Eurasian Tree Sparrow,0.52122116,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-19-birdnet-17:04:31.wav
-3.0,6.0,Passer montanus,Eurasian Tree Sparrow,0.59292006,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-19-birdnet-17:04:31.wav
-6.0,9.0,Passer cinnamomeus,Russet Sparrow,0.45473927,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-19-birdnet-17:04:31.wav
-6.0,9.0,Passer montanus,Eurasian Tree Sparrow,0.2690976,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-19-birdnet-17:04:31.wav
+0.0,3.0,Corvus cornix,Hooded Crow,0.6198144,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-19-birdnet-19:53:41.wav
+0.0,3.0,Corvus frugilegus,Rook,0.30584592,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-19-birdnet-19:53:41.wav
+3.0,6.0,Corvus brachyrhynchos,American Crow,0.46737492,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-19-birdnet-19:53:41.wav
+3.0,6.0,Corvus cornix,Hooded Crow,0.35674816,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-19-birdnet-19:53:41.wav
+6.0,9.0,Corvus frugilegus,Rook,0.6768571,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-19-birdnet-19:53:41.wav
