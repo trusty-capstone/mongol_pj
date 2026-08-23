@@ -1,232 +1,418 @@
 <!DOCTYPE html>
-
 <html lang="ko">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>유해조류 감지 알림</title>
-
-
+<title>스마트 유해조류 감지 시스템</title>
 
 <style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+}
 
 body {
-
-display: flex;
-
-justify-content: center;
-
-align-items: center;
-
-height: 100vh;
-
-margin: 0;
-
-background-color: #f4f4f4;
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #eef2f3 0%, #8e9eab 100%);
+    padding: 20px;
 }
 
-
-
-.alert-box {
-
-width: 800px;
-
-height: 500px;
-
-border: 2px solid black;
-
-background-color: white;
-
-position: relative;
-
-display: flex;
-
-justify-content: center;
-
-align-items: center;
-
-font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
-
+/* 대형 카드 컨테이너 */
+.card-container {
+    width: 1050px;
+    height: 640px;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
 }
 
-
-
-.text-center {
-
-text-align: center;
-
+/* 상단 프로젝트 뱃지 */
+.header-badge {
+    position: absolute;
+    top: 35px;
+    left: 45px;
+    background-color: #f1f5f9;
+    color: #475569;
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
 }
 
-
-
-.warning-text {
-
-color: red;
-
-font-size: 40px;
-
-font-weight: bold;
-
-margin: 0 0 15px 0;
-
-letter-spacing: -1px;
-
+/* 화면 섹션 */
+.view-section {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    animation: fadeIn 0.4s ease-in-out forwards;
 }
 
-
-
-.bird-text {
-
-color: black;
-
-font-size: 36px;
-
-font-weight: bold;
-
-margin: 0;
-
-letter-spacing: -1px;
-
+.view-section.active {
+    display: flex;
 }
 
-
-
-.sound-btn {
-
-position: absolute;
-
-bottom: 30px;
-
-right: 30px;
-
-padding: 10px 15px;
-
-background-color: #e0e0e0;
-
-border: none;
-
-cursor: pointer;
-
-font-size: 18px;
-
-font-weight: bold;
-
-display: flex;
-
-align-items: center;
-
-gap: 8px;
-
-transition: background-color 0.2s;
-
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-
-
-.sound-btn:hover {
-
-background-color: #cccccc;
-
+/* 1단계: 초기 화면 */
+.start-icon {
+    font-size: 96px;
+    margin-bottom: 24px;
 }
 
-
-
-.sound-btn svg {
-
-width: 24px;
-
-height: 24px;
-
+.start-title {
+    font-size: 38px;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 14px;
 }
 
+.start-desc {
+    font-size: 20px;
+    color: #64748b;
+    margin-bottom: 40px;
+}
+
+.btn-primary {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 22px 48px;
+    font-size: 24px;
+    font-weight: 700;
+    border-radius: 18px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.35);
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.45);
+}
+
+/* 2단계: 대형 새 모양 채우기 로딩 애니메이션 */
+.bird-loader-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin-bottom: 35px;
+}
+
+.bird-base {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    fill: #e2e8f0;
+}
+
+.bird-fill-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    overflow: hidden;
+    transition: height 0.1s linear;
+}
+
+.bird-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 140px;
+    height: 140px;
+    fill: #2563eb;
+}
+
+.loading-text {
+    font-size: 30px;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 12px;
+}
+
+.loading-subtext {
+    font-size: 19px;
+    color: #64748b;
+}
+
+/* 3단계: 결과 화면 알림 뱃지 */
+.status-pill {
+    padding: 12px 28px;
+    border-radius: 40px;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+}
+
+/* 유해조류일 때 (빨간색) */
+.status-pill.pest {
+    background-color: #fee2e2;
+    color: #ef4444;
+    border: 2px solid #fca5a5;
+}
+
+/* 일반 조류일 때 (노란색) */
+.status-pill.general {
+    background-color: #fef9c3;
+    color: #a16207;
+    border: 2px solid #fde047;
+}
+
+.detected-bird-name {
+    font-size: 58px;
+    font-weight: 900;
+    color: #0f172a;
+    margin-bottom: 45px;
+    letter-spacing: -1px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 22px;
+}
+
+.btn-sound {
+    padding: 20px 40px;
+    font-size: 22px;
+    font-weight: 700;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.2s;
+    background-color: #f1f5f9;
+    color: #334155;
+}
+
+.btn-sound.playing {
+    background-color: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.35);
+}
+
+.btn-sound svg {
+    width: 28px;
+    height: 28px;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #64748b;
+    border: 2px solid #cbd5e1;
+    padding: 20px 32px;
+    font-size: 20px;
+    font-weight: 700;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #f8fafc;
+    border-color: #94a3b8;
+    color: #334155;
+}
 </style>
-
 </head>
-
-
 
 <body>
 
+<div class="card-container">
+    <div class="header-badge">AI BIRD MONITORING SYSTEM</div>
 
+    <!-- [STEP 1] 처음 화면 -->
+    <div class="view-section active" id="view-initial">
+        <div class="start-icon">🎙️</div>
+        <h2 class="start-title">야외 유해조류 음향 감지</h2>
+        <p class="start-desc">마이크를 통해 8초간 소리를 수음하고 AI 분석을 시작합니다.</p>
+        <button class="btn-primary" onclick="startRecordAndAnalyze()">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+            </svg>
+            새소리 수음 및 분석 시작
+        </button>
+    </div>
 
-<div class="alert-box">
+    <!-- [STEP 2] 새 채우기 로딩 화면 -->
+    <div class="view-section" id="view-loading">
+        <div class="bird-loader-container">
+            <svg class="bird-base" viewBox="0 0 24 24">
+                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+            </svg>
 
+            <div class="bird-fill-wrapper" id="bird-fill-wrapper">
+                <svg class="bird-fill" viewBox="0 0 24 24">
+                    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                </svg>
+            </div>
+        </div>
 
+        <h3 class="loading-text" id="loading-title">소리 수음 중... (0%)</h3>
+        <p class="loading-subtext">주변 소음을 필터링하고 BirdNET 모델로 조류를 식별하고 있습니다.</p>
+    </div>
 
-<!-- 중앙 알림 메시지 -->
+    <!-- [STEP 3] 감지 완료 화면 -->
+    <div class="view-section" id="view-result">
+        <div class="status-pill pest" id="status-pill">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span id="status-badge-text">유해조류 감지!!</span>
+        </div>
+        
+        <h1 class="detected-bird-name" id="bird-name">분석 결과 없음</h1>
 
-<div class="text-center">
-
-<p class="warning-text">
-
-!!유해조류 감지!!
-
-</p>
-
-
-
-<!-- BirdNET 결과가 여기에 표시됨 -->
-
-<p class="bird-text" id="bird-name">
-
-분석 중...
-
-</p>
-
+        <div class="action-buttons">
+            <button class="btn-secondary" onclick="resetToInitial()">
+                ↺ 다시 녹음
+            </button>
+            <button class="btn-sound" id="sound-toggle-btn" onclick="togglePredatorSound()">
+                <span id="btn-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    </svg>
+                </span>
+                <span id="btn-text">천적 소리 출력하기</span>
+            </button>
+        </div>
+    </div>
 </div>
-
-
-
-<!-- 우측 하단 천적 소리 출력 버튼 -->
-
-<button class="sound-btn" onclick="togglePredatorSound()">
-    <span id="btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 5"></polygon>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-        </svg>
-    </span>
-    <span id="btn-text">천적 소리 출력하기</span>
-</button>
-
-
-<!-- 실제 재생될 천적 소리 -->
-
-<audio id="predator-audio" src="hawk_sound.mp3"></audio>
-
-
-
-</div>
-
-
 
 <script>
 let currentDetectedBird = '';
 let isPlaying = false;
+let fillInterval = null;
+
+const PEST_KEYWORDS = [
+    'sparrow', '참새',
+    'magpie', '까치',
+    'rook', '떼까마귀',
+    'crow', '까마귀',
+    'bulbul', '직박구리'
+];
+
+function showView(viewId) {
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+}
+
+function resetToInitial() {
+    if (isPlaying) togglePredatorSound();
+    clearInterval(fillInterval);
+    document.getElementById('bird-fill-wrapper').style.height = '0%';
+    showView('view-initial');
+}
+
+function startBirdFillAnimation(totalSeconds) {
+    const wrapper = document.getElementById('bird-fill-wrapper');
+    const title = document.getElementById('loading-title');
+    let currentPercent = 0;
+    wrapper.style.height = '0%';
+
+    const intervalTime = 50;
+    const step = (intervalTime / (totalSeconds * 1000)) * 100;
+
+    clearInterval(fillInterval);
+    fillInterval = setInterval(() => {
+        currentPercent += step;
+        if (currentPercent >= 95) {
+            currentPercent = 95;
+            title.textContent = 'AI 조류 식별 분석 중... (95%)';
+        } else {
+            title.textContent = `소리 수음 중... (${Math.floor(currentPercent)}%)`;
+        }
+        wrapper.style.height = `${currentPercent}%`;
+    }, intervalTime);
+}
+
+async function startRecordAndAnalyze() {
+    const RECORD_DURATION = 8;
+    showView('view-loading');
+    startBirdFillAnimation(RECORD_DURATION);
+
+    try {
+        const response = await fetch('/api/record-and-analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ duration: RECORD_DURATION })
+        });
+
+        const result = await response.json();
+        
+        clearInterval(fillInterval);
+        document.getElementById('bird-fill-wrapper').style.height = '100%';
+        document.getElementById('loading-title').textContent = '분석 완료! (100%)';
+
+        if (result.status === 'success') {
+            await loadLatestBird();
+            setTimeout(() => {
+                showView('view-result');
+            }, 300);
+        } else {
+            alert('분석 실패: ' + result.message);
+            showView('view-initial');
+        }
+    } catch (error) {
+        clearInterval(fillInterval);
+        console.error(error);
+        alert('라즈베리파이 서버 통신 중 오류가 발생했습니다.');
+        showView('view-initial');
+    }
+}
 
 function parseCSVLine(line) {
     const result = [];
     let current = '';
     let insideQuotes = false;
-
     for (let i = 0; i < line.length; i++) {
         const char = line[i];
         if (char === '"') {
             if (insideQuotes && line[i + 1] === '"') {
-                current += '"';
-                i++;
+                current += '"'; i++;
             } else {
                 insideQuotes = !insideQuotes;
             }
         } else if (char === ',' && !insideQuotes) {
-            result.push(current.trim());
-            current = '';
+            result.push(current.trim()); current = '';
         } else {
             current += char;
         }
@@ -243,7 +429,7 @@ function getDateTimeFromFile(file) {
 
 async function loadLatestBird() {
     try {
-        const response = await fetch('BirdNET_CombinedTable.csv');
+        const response = await fetch('BirdNET_CombinedTable.csv?nocache=' + Date.now());
         if (!response.ok) throw new Error('CSV 파일을 불러올 수 없습니다.');
 
         const csvText = await response.text();
@@ -254,10 +440,6 @@ async function loadLatestBird() {
         const fileIndex = headers.findIndex(h => h.toLowerCase().trim() === 'file');
         const confidenceIndex = headers.findIndex(h => h.toLowerCase().trim() === 'confidence');
         const commonNameIndex = headers.findIndex(h => h.toLowerCase().trim() === 'common name');
-
-        if (confidenceIndex === -1 || commonNameIndex === -1) {
-            throw new Error('필수 컬럼을 찾지 못했습니다.');
-        }
 
         const data = [];
         for (let i = 1; i < lines.length; i++) {
@@ -278,7 +460,7 @@ async function loadLatestBird() {
             });
         }
 
-        if (data.length === 0) throw new Error('분석 가능한 BirdNET 결과가 없습니다.');
+        if (data.length === 0) throw new Error('데이터 없음');
 
         const validTimeData = data.filter(d => d.dateTime.getTime() > 0);
         let targetData = data;
@@ -299,28 +481,45 @@ async function loadLatestBird() {
 
         currentDetectedBird = bestResult.commonName.trim();
         document.getElementById('bird-name').textContent = currentDetectedBird + ' 출현!';
+
+        const pillElement = document.getElementById('status-pill');
+        const badgeTextElement = document.getElementById('status-badge-text');
+        
+        const isPest = PEST_KEYWORDS.some(keyword => 
+            currentDetectedBird.toLowerCase().includes(keyword.toLowerCase())
+        );
+
+        if (isPest) {
+            pillElement.className = 'status-pill pest';
+            badgeTextElement.textContent = '유해조류 감지!!';
+        } else {
+            pillElement.className = 'status-pill general';
+            badgeTextElement.textContent = '조류 감지';
+        }
+
     } catch (error) {
-        console.error('BirdNET 결과 불러오기 실패:', error);
+        console.error('BirdNET 파싱 실패:', error);
         currentDetectedBird = '';
-        document.getElementById('bird-name').textContent = '분석 결과 없음';
+        document.getElementById('bird-name').textContent = '식별된 조류 없음';
     }
 }
 
 const SPEAKER_ICON = `
-<svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
     <polygon points="11 5 6 9 2 9 2 15 6 15 11 5"></polygon>
     <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
     <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
 </svg>`;
 
 const MUTE_ICON = `
-<svg viewBox="0 0 24 24" fill="none" stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
     <polygon points="11 5 6 9 2 9 2 15 6 15 11 5"></polygon>
     <line x1="23" y1="9" x2="17" y2="15"></line>
     <line x1="17" y1="9" x2="23" y2="15"></line>
 </svg>`;
 
 async function togglePredatorSound() {
+    const btn = document.getElementById('sound-toggle-btn');
     const iconSpan = document.getElementById('btn-icon');
     const textSpan = document.getElementById('btn-text');
 
@@ -335,6 +534,7 @@ async function togglePredatorSound() {
             const result = await response.json();
             if (result.status === 'success') {
                 isPlaying = true;
+                btn.classList.add('playing');
                 iconSpan.innerHTML = MUTE_ICON;
                 textSpan.textContent = '소리 끄기 (정지)';
             } else {
@@ -351,8 +551,9 @@ async function togglePredatorSound() {
 
             if (result.status === 'success') {
                 isPlaying = false;
+                btn.classList.remove('playing');
                 iconSpan.innerHTML = SPEAKER_ICON;
-                textSpan.textContent = '천적 참매의 소리출력하기';
+                textSpan.textContent = '천적 소리 출력하기';
             }
         } catch (error) {
             console.error('서버 통신 실패:', error);
@@ -360,12 +561,6 @@ async function togglePredatorSound() {
         }
     }
 }
-
-window.addEventListener('DOMContentLoaded', loadLatestBird);
 </script>
-
-
-
 </body>
-
 </html>
