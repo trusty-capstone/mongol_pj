@@ -1,4 +1,5 @@
 from datetime import datetime
+import glob
 import os
 import random
 import subprocess
@@ -70,6 +71,19 @@ def record_and_analyze():
             file_path,
         ]
         subprocess.run(record_cmd, check=True)
+
+        # ----------------------------------------------------
+        # [추가] 녹음 파일 자동 정리 (최신 10개만 유지하고 오래된 파일 삭제)
+        # ----------------------------------------------------
+        wav_files = sorted(
+            glob.glob(os.path.join(STREAMDATA_DIR, "*.wav")),
+            key=os.path.getmtime,
+        )
+        for old_file in wav_files[:-10]:
+            try:
+                os.remove(old_file)
+            except Exception as ex:
+                print(f"[File Cleanup Error] {old_file}: {ex}")
 
         # 2. BirdNET 환경 설정
         birdnet_root = "/home/user/mongol_pj/BirdNET-Analyzer-main"
