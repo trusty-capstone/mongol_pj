@@ -1,4 +1,3 @@
 Start (s),End (s),Scientific name,Common name,Confidence,File
-3.0,6.0,Hypsipetes amaurotis,Brown-eared Bulbul,0.3466517,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-23-birdnet-12:43:44.wav
-3.0,6.0,Zosterops simplex,Swinhoe's White-eye,0.29771963,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-23-birdnet-12:43:44.wav
-6.0,9.0,Columba livia,Rock Pigeon,0.254279,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-23-birdnet-12:43:44.wav
+0.0,3.0,Human vocal,Human vocal,0.54598963,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-23-birdnet-13:06:44.wav
+3.0,6.0,Hypsipetes amaurotis,Brown-eared Bulbul,0.7874908,/home/user/mongol_pj/BirdNET-Analyzer-main/Recorded/StreamData/2026-08-23-birdnet-13:06:44.wav

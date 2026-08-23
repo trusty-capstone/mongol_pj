@@ -13,7 +13,7 @@ PREDATOR_SOUNDS = [
     os.path.join(BASE_DIR, "bubo_sound.mp3"),
 ]
 
-# 유해조류 키워드 매핑 테이블 (한국어 / 영어 학명 및 일반명 대응)
+# 유해조류 4종 키워드 매핑 테이블
 BIRD_SOUND_MAP = {
     "bulbul": "bulbul_alarm.mp3",
     "직박구리": "bulbul_alarm.mp3",
@@ -21,8 +21,6 @@ BIRD_SOUND_MAP = {
     "까치": "magpie_alarm.mp3",
     "rook": "rook_alarm.mp3",
     "떼까마귀": "rook_alarm.mp3",
-    "crow": "rook_alarm.mp3",  # 까마귀류 대응
-    "까마귀": "rook_alarm.mp3",
     "sparrow": "sparrow_alarm.mp3",
     "참새": "sparrow_alarm.mp3",
 }
@@ -50,36 +48,33 @@ def play_sound():
     try:
         played_files = []
 
-        # 감지된 새 이름 매칭 확인
+        # 4종 유해조류 매칭 여부 확인
         matched_alarm = None
         for key, sound_file in BIRD_SOUND_MAP.items():
             if key in bird_name:
                 matched_alarm = sound_file
                 break
 
-        # 일치하는 새가 없으면 기본값으로 참새 경고음 사용
-        if not matched_alarm:
-            matched_alarm = "sparrow_alarm.mp3"
-
-        bird_sound_path = os.path.join(BASE_DIR, matched_alarm)
-
         # 천적 소리(awk vs bubo) 중 1개 랜덤 선택
-        chosen_predator_path = random.choice(PREDATOR_SOUNDS)
+        chosen_predator = random.choice(PREDATOR_SOUNDS)
 
-        # 1) 해당 유해조류 경고음 재생
-        subprocess.Popen(["mpg123", bird_sound_path])
-        played_files.append(bird_sound_path)
-
-        # 2) 랜덤 천적 소리 동시 재생
-        subprocess.Popen(["mpg123", chosen_predator_path])
-        played_files.append(chosen_predator_path)
+        if matched_alarm:
+            # [4종 유해조류 감지 시] 해당 새 경고음 + 천적 소리 동시 재생
+            bird_sound_path = os.path.join(BASE_DIR, matched_alarm)
+            subprocess.Popen(["mpg123", bird_sound_path])
+            subprocess.Popen(["mpg123", chosen_predator])
+            played_files.extend([bird_sound_path, chosen_predator])
+        else:
+            # [그 외의 새 감지 시] 천적 소리(awk 또는 bubo) 1종만 단독 재생
+            subprocess.Popen(["mpg123", chosen_predator])
+            played_files.append(chosen_predator)
 
         return jsonify(
             {
                 "status": "success",
                 "detected_bird": bird_name,
-                "alarm_file": bird_sound_path,
-                "predator_file": chosen_predator_path,
+                "is_target_bird": bool(matched_alarm),
+                "played_files": played_files,
             }
         )
 
@@ -87,13 +82,12 @@ def play_sound():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
-# 2. 소리 정지 API (모든 사운드 일괄 정지)
+# 2. 소리 정지 API (모든 소리 일괄 중단)
 @app.route("/api/stop-sound", methods=["POST"])
 def stop_sound():
     try:
-        # 재생 중인 모든 오디오 프로세스 강제 종료
         subprocess.run(["pkill", "-9", "mpg123"], stderr=subprocess.DEVNULL)
-        return jsonify({"status": "success", "message": "모든 소리 정지 성공"})
+        return jsonify({"status": "success", "message": "모든 소리 정지 완료"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
