@@ -138,7 +138,96 @@ body {
     height: 32px;
 }
 
-/* Step 2: Bird Loader & Terminal Console */
+/* Step 2: Audio Recording Interface */
+.recording-mic-box {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    background: #eff6ff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    border: 3px solid #bfdbfe;
+}
+
+.recording-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.2);
+    animation: pulseWave 1.8s infinite ease-out;
+}
+
+@keyframes pulseWave {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+.recording-mic-box svg {
+    width: 64px;
+    height: 64px;
+    color: #2563eb;
+    z-index: 1;
+}
+
+.recording-title {
+    font-size: 38px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 12px;
+}
+
+.recording-desc {
+    font-size: 18px;
+    color: #64748b;
+    margin-bottom: 36px;
+}
+
+/* Audio Waveform Simulator */
+.waveform-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 60px;
+    margin-bottom: 28px;
+}
+
+.wave-bar {
+    width: 8px;
+    height: 16px;
+    background-color: #3b82f6;
+    border-radius: 4px;
+    animation: waveMotion 1s infinite ease-in-out alternate;
+}
+
+.wave-bar:nth-child(2) { animation-delay: 0.15s; }
+.wave-bar:nth-child(3) { animation-delay: 0.3s; }
+.wave-bar:nth-child(4) { animation-delay: 0.45s; }
+.wave-bar:nth-child(5) { animation-delay: 0.6s; }
+.wave-bar:nth-child(6) { animation-delay: 0.75s; }
+.wave-bar:nth-child(7) { animation-delay: 0.35s; }
+.wave-bar:nth-child(8) { animation-delay: 0.2s; }
+
+@keyframes waveMotion {
+    0% { height: 12px; background-color: #93c5fd; }
+    100% { height: 56px; background-color: #1d4ed8; }
+}
+
+.record-timer-badge {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 18px;
+    font-weight: 700;
+    border: 1px solid #cbd5e1;
+}
+
+/* Step 3: Bird Loader & Terminal Console */
 .bird-loader-container {
     position: relative;
     width: 96px;
@@ -179,10 +268,9 @@ body {
     font-size: 26px;
     font-weight: 800;
     color: #1e293b;
-    margin-bottom: 36px;
+    margin-bottom: 24px;
 }
 
-/* 우측 잉여 여백을 잘라낸 740px 폭의 터미널 콘솔 */
 .log-terminal {
     width: 740px;
     max-width: 92%;
@@ -219,7 +307,7 @@ body {
 .log-line.matrix { color: #22c55e; font-family: monospace; font-size: 11.5px; opacity: 0.85; }
 .log-line.success { color: #4ade80; font-weight: 700; background: rgba(74, 222, 128, 0.1); padding: 1px 6px; border-radius: 3px; }
 
-/* Step 3: Detection Result View */
+/* Step 4: Detection Result View */
 .status-pill {
     padding: 12px 38px;
     border-radius: 50px;
@@ -237,14 +325,12 @@ body {
     height: 24px;
 }
 
-/* 유해조류 뱃지 (레드) */
 .status-pill.pest {
     background-color: #fee2e2;
     color: #dc2626;
     border: 2px solid #ef4444;
 }
 
-/* 일반 조류 뱃지 (옐로우) */
 .status-pill.general {
     background-color: #fef9c3;
     color: #a16207;
@@ -268,21 +354,11 @@ body {
     margin-top: 8px;
 }
 
-/* 유해조류일 때 이름 색상 */
-.detected-bird-name.pest-name {
-    color: #991b1b;
-}
-.detected-bird-name.pest-name .sub-label {
-    color: #b91c1c;
-}
+.detected-bird-name.pest-name { color: #991b1b; }
+.detected-bird-name.pest-name .sub-label { color: #b91c1c; }
 
-/* 일반 조류일 때 이름 색상 */
-.detected-bird-name.general-name {
-    color: #854d0e;
-}
-.detected-bird-name.general-name .sub-label {
-    color: #a16207;
-}
+.detected-bird-name.general-name { color: #854d0e; }
+.detected-bird-name.general-name .sub-label { color: #a16207; }
 
 .confidence-box {
     font-size: 19px;
@@ -293,14 +369,12 @@ body {
     font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
-/* 유해조류 정보 박스 (레드) */
 .confidence-box.pest-conf {
     background-color: #fef2f2;
     border: 2px solid #fecaca;
     color: #b91c1c;
 }
 
-/* 일반 조류 정보 박스 (옐로우) */
 .confidence-box.general-conf {
     background-color: #fefce8;
     border: 2px solid #fef08a;
@@ -327,27 +401,21 @@ body {
     color: #334155;
 }
 
-/* 유해조류 감지 시 솔리드 레드 버튼 */
 .btn-sound.threat-cta {
     background-color: #dc2626;
     color: #ffffff;
     box-shadow: 0 4px 16px rgba(220, 38, 38, 0.25);
 }
 
-.btn-sound.threat-cta:hover {
-    background-color: #b91c1c;
-}
+.btn-sound.threat-cta:hover { background-color: #b91c1c; }
 
-/* 일반 조류 감지 시 솔리드 옐로우/앰버 버튼 */
 .btn-sound.general-cta {
     background-color: #d97706;
     color: #ffffff;
     box-shadow: 0 4px 16px rgba(217, 119, 6, 0.25);
 }
 
-.btn-sound.general-cta:hover {
-    background-color: #b45309;
-}
+.btn-sound.general-cta:hover { background-color: #b45309; }
 
 .btn-sound.playing {
     background-color: #1e293b !important;
@@ -390,7 +458,7 @@ body {
         <div class="start-icon">🦜</div>
         <h2 class="start-title">Outdoor Avian Acoustic Detection</h2>
         <p class="start-desc">Captures environmental audio and identifies avian species via deep learning neural network.</p>
-        <button class="btn-primary" onclick="startRecordAndAnalyze()">
+        <button class="btn-primary" onclick="startWorkflow()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polygon points="10 8 16 12 10 16 10 8"></polygon>
@@ -399,7 +467,36 @@ body {
         </button>
     </div>
 
-    <!-- [STEP 2] Loading & Synchronized Cyber Stream Log View -->
+    <!-- [STEP 2] Real-Time Audio Capture View (소리 수집 인터페이스 분리) -->
+    <div class="view-section" id="view-recording">
+        <div class="recording-mic-box">
+            <div class="recording-pulse"></div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+        </div>
+
+        <h2 class="recording-title">Capturing Acoustic Stream...</h2>
+        <p class="recording-desc">Recording ambient environmental audio via high-gain microphone.</p>
+
+        <div class="waveform-container">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+        </div>
+
+        <div class="record-timer-badge" id="record-timer">Buffer Ingestion: 5.0s remaining</div>
+    </div>
+
+    <!-- [STEP 3] Deep Neural Inference Pipeline View (AI 분석 인터페이스 분리) -->
     <div class="view-section" id="view-loading">
         <div class="bird-loader-container">
             <svg class="bird-base" viewBox="0 0 24 24">
@@ -415,11 +512,10 @@ body {
 
         <h3 class="loading-text" id="loading-title">Executing Deep Neural Inference Pipeline...</h3>
 
-        <!-- Terminal Console (너비 740px로 최적화) -->
         <div class="log-terminal" id="log-terminal"></div>
     </div>
 
-    <!-- [STEP 3] Detection Result View -->
+    <!-- [STEP 4] Detection Result View -->
     <div class="view-section" id="view-result">
         <div class="status-pill pest" id="status-pill">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -512,7 +608,6 @@ function appendLogLine(text, type = 'normal') {
     }
 }
 
-// 0.1초(100ms) 간격으로 로그 출력
 function startSynchronizedLogStream() {
     const terminal = document.getElementById('log-terminal');
     const wrapper = document.getElementById('bird-fill-wrapper');
@@ -545,18 +640,41 @@ function startSynchronizedLogStream() {
     }, 100);
 }
 
-// 녹음 & 분석 실행
-async function startRecordAndAnalyze() {
-    const RECORD_DURATION = 5;
-    showView('view-loading');
-    
-    startSynchronizedLogStream();
-    
+// [핵심 로직] 단계별 순차 실행 (1. 녹음 인터페이스 -> 2. 분석 인터페이스 -> 3. 결과 인터페이스)
+async function startWorkflow() {
+    const RECORD_DURATION = 5; // 5초 녹음
+
+    // 1단계: 음향 수집/녹음 인터페이스 표시
+    showView('view-recording');
+
+    // 녹음 타이머 카운트다운
+    let timeLeft = RECORD_DURATION;
+    const timerElem = document.getElementById('record-timer');
+    timerElem.textContent = `Buffer Ingestion: ${timeLeft.toFixed(1)}s remaining`;
+
+    const timerInterval = setInterval(() => {
+        timeLeft -= 0.1;
+        if (timeLeft > 0) {
+            timerElem.textContent = `Buffer Ingestion: ${timeLeft.toFixed(1)}s remaining`;
+        } else {
+            clearInterval(timerInterval);
+        }
+    }, 100);
+
+    // 백그라운드에서 실제 서버 API 호출
     const fetchPromise = fetch('/api/record-and-analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ duration: RECORD_DURATION })
     }).then(r => r.json());
+
+    // 5초 녹음 시간 대기
+    await delay(RECORD_DURATION * 1000);
+    clearInterval(timerInterval);
+
+    // 2단계: AI 딥러닝 추론/로그 인터페이스로 전환
+    showView('view-loading');
+    startSynchronizedLogStream();
 
     try {
         const result = await fetchPromise;
@@ -575,6 +693,8 @@ async function startRecordAndAnalyze() {
             wrapper.style.height = '100%';
 
             await delay(550);
+            
+            // 3단계: 최종 결과 인터페이스로 전환
             showView('view-result');
         } else {
             alert('Analysis Failed: ' + result.message);
