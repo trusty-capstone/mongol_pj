@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>유해 새소리 선택 - 로컬 오디오 재생</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Pretendard', 'Malgun Gothic', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background-color: #f4f7f6;
+        }
+        .container {
+            width: 100%; max-width: 1100px; display: flex;
+            flex-direction: column; align-items: center; gap: 60px; padding: 40px;
+        }
+        .title-box {
+            background-color: #D2F5F5; padding: 20px 50px;
+            border-radius: 30px; box-shadow: 0 10px 25px rgba(210, 245, 245, 0.6);
+        }
+        .title-box h1 { color: #0d3637; font-size: 38px; font-weight: 700; letter-spacing: 1px; }
+        
+        .bird-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; width: 100%; }
+        
+        .bird-card {
+            background-color: #ffffff; border: 2px solid transparent; /* 테두리 공간 미리 확보 */
+            border-radius: 24px; padding: 40px 20px;
+            display: flex; flex-direction: column; align-items: center; gap: 25px;
+            cursor: pointer; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease; outline: none;
+        }
+        .bird-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); }
+        .bird-card:active { transform: translateY(0); }
+        
+        /* ★ 추가된 부분: 오디오가 재생 중일 때 카드에 적용될 스타일 */
+        .bird-card.playing {
+            background-color: #e8f8f8; /* 배경을 연한 민트색으로 변경 */
+            border: 2px solid #7cd3d3; /* 눈에 띄게 테두리 추가 */
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(124, 211, 211, 0.3);
+        }
+
+       
+
+        .bird-image {
+            font-size: 64px; background-color: #f8faf9;
+            width: 120px; height: 120px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; margin-bottom: 10px;
+            overflow: hidden; /* ★ 1. 추가: 동그라미 밖으로 튀어나가는 부분 잘라내기 */
+        }
+        
+        /* ★ 2. 새로 추가: img 태그가 동그라미 크기에 100% 꽉 차도록 설정 */
+        .bird-image img {
+            width: 75%;  /* 100% 였던 크기를 75%로 줄여 여백 생성 */
+            height: 75%;
+            object-fit: contain; /* 이미지가 잘리지 않고 비율에 맞게 쏙 들어가도록 변경 */
+        }
+        
+        /* 재생 중일 때 이미지 배경색도 살짝 진하게 (선택) */
+        .bird-card.playing .bird-image { background-color: #ffffff; }
+
+        .bird-card h2 { font-size: 24px; font-weight: 600; color: #2c3e50; }
+        
+        .play-indicator {
+            width: 60px; height: 60px; border-radius: 50%;
+            background-color: #D2F5F5; color: #0d3637;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 24px; transition: background-color 0.3s ease;
+        }
+        .bird-card:hover .play-indicator { background-color: #b7efef; }
+        
+        /* 재생 중일 때 아이콘 색상 변경 */
+        .bird-card.playing .play-indicator {
+            background-color: #219ebc; color: white;
+        }
+
+        @media (max-width: 900px) { .bird-list { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 500px) { .bird-list { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="title-box">
+            <h1>Bird Sound Selection</h1>
+        </header>
+        <main class="bird-list">
+            <!-- ★ 추가된 부분: onclick 함수 끝에 'this'를 추가하여 클릭한 버튼 자체를 JS로 넘겨줍니다. -->
+            <button class="bird-card" onclick="playSound('Song Sparrow_1.mp3', 10000, 0.8, this)">
+                <div class="bird-image">
+                <img src="../brid img/sparrow.png" alt="sparrow">
+
+            </div>
+                <h2>sparrow</h2>
+                <div class="play-indicator"><i class="fa-solid fa-volume-high"></i></div>
+            </button>
+
+            <button class="bird-card" onclick="playSound('bulbul_sound.mp3', 10000, 0.2, this)">
+                <div class="bird-image">
+                <img src="../brid img/bulbul.png" alt="bulbul">
+                 </div>
+                <h2>bulbul</h2>
+                <div class="play-indicator"><i class="fa-solid fa-volume-high"></i></div>
+            </button>
+
+            <button class="bird-card" onclick="playSound('marple_soud.mp3', 10000, 1.0, this)">
+                <div class="bird-image">
+                <img src="../brid img/magpie.png" alt="magpie">
+                </div>
+                <h2>magpie</h2>
+                <div class="play-indicator"><i class="fa-solid fa-volume-high"></i></div>
+            </button>
+
+            <button class="bird-card" onclick="playSound('rook_sound.mp3', 10000, 0.3, this)">
+                <div class="bird-image">
+                <img src="../brid img/rook.png" alt="rook">
+                </div>
+                <h2>rook</h2>
+                <div class="play-indicator"><i class="fa-solid fa-volume-high"></i></div>
+            </button>
+        </main>
+    </div>
+
+    <script>
+    let currentAudio = null;
+    let audioTimeout = null;
+
+    // ★ 추가된 부분: cardElement 파라미터를 추가로 받습니다.
+    function playSound(filename, playTime = 10000, volume = 1.0, cardElement) {
+        
+        // 1. 재생을 시작하기 전에 모든 카드에서 'playing' 디자인을 지웁니다.
+        const allCards = document.querySelectorAll('.bird-card');
+        allCards.forEach(card => card.classList.remove('playing'));
+
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0; 
+        }
+
+        if (audioTimeout) {
+            clearTimeout(audioTimeout);
+        }
+
+        // 2. 방금 클릭한 카드에만 'playing' 디자인을 추가합니다.
+        if (cardElement) {
+            cardElement.classList.add('playing');
+        }
+
+        currentAudio = new Audio(filename);
+        currentAudio.volume = volume; 
+        
+        currentAudio.play().then(() => {
+            console.log(filename + " 재생 완료!");
+            
+            // 3. 정해진 시간(10초)이 지나서 소리가 꺼지면 디자인도 원래대로 되돌립니다.
+            audioTimeout = setTimeout(() => {
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
+                    if (cardElement) cardElement.classList.remove('playing');
+                }
+            }, playTime);
+
+            // 4. 오디오 파일 자체가 10초보다 짧아서 스스로 끝났을 때도 디자인을 되돌립니다.
+            currentAudio.onended = () => {
+                if (cardElement) cardElement.classList.remove('playing');
+            };
+
+        }).catch(error => {
+            console.error("오디오 재생 실패:", error);
+            alert("'" + filename + "' 파일을 찾을 수 없습니다.");
+            if (cardElement) cardElement.classList.remove('playing'); // 에러나면 디자인 원상복구
+        });
+    }
+    </script>
+</body>
+</html>
